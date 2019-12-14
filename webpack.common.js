@@ -15,17 +15,35 @@ module.exports = {
         new HtmlWebpackPlugin({
             filename:'index.html',
             template:'./src/html/index.html',
-            chunks:['index']
+            chunks:['style','index'] // 公共样式分离
         }),
         new HtmlWebpackPlugin({
             filename: 'login.html',
             template: './src/html/login.html',
-            chunks: ['login']
+            chunks: ['styel','login'] // 公共样式分离style
         }),
         new MiniCssExtractPlugin({
               filename: 'css/[name].css'
          }),
     ],
+    optimization: {
+        // 代码分割
+        splitChunks: {
+            cacheGroups: {
+                commons: {
+                    test: /jquery/,
+                    name: 'jquery',
+                    chunks: 'all'
+                },
+                styles: {
+                    test: /[\\/]common[\\/].+\.css$/,
+                    name: 'style',
+                    chunks: 'all',
+                    enforce: true
+                }
+            }
+        }
+    },
     module: {
               rules: [
                   {
@@ -60,8 +78,33 @@ module.exports = {
                           'css-loader',
                           'less-loader'
                             ]
+                },
+                {
+                    test:/\.(png|svg|jpg|gif|webp)$/,
+                    use:[
+                        {
+                            loader:'url-loader',
+                            options:{
+                                // 最终生成的css代码中,图片url前缀
+                                publicPath: '../images',
+                                // 图片输出的实际路径(相对于dist)
+                                outputPath: 'images',
+                                // 当小于某KB时转为base64
+                                limit: 0
+                            }
+                        }
+                    ]
+                },
+                {
+                    test: /\.(html)$/,
+                    use: {
+                        loader: 'html-loader',
+                            options: {
+                                attrs: ['img:src', 'img:data-src', 'audio:src'],
+                                    minimize: true
+                                }
+                        }
                 }
-                    
               ]
            },
         
