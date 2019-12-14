@@ -10,6 +10,7 @@ module.exports = {
        login :'./src/js/login.js'
     },
     plugins:[
+        // 打包之前清空
         new CleanWebpackPlugin(),
         // 设置html模板生成路径
         new HtmlWebpackPlugin({
@@ -47,7 +48,7 @@ module.exports = {
     module: {
               rules: [
                   {
-                      test: /\.js$/,
+                      test: /\.js|jsx$/,
                      exclude: /(node_modules|bower_components)/,
                       use: {
                           loader: 'babel-loader',
@@ -55,7 +56,7 @@ module.exports = {
                               presets: ['@babel/preset-env'],
                               plugins: [
                                  '@babel/plugin-transform-runtime',
-                                  '@babel/plugin-transform-modules-commonjs'
+                                '@babel/plugin-transform-modules-commonjs'
                               ]
                           }
                       }
@@ -75,7 +76,13 @@ module.exports = {
                             // 将原来的style-loader替换
                             MiniCssExtractPlugin.loader,
                         //   'style-loader',
-                          'css-loader',
+                        { 
+                            loader: "css-loader",
+                            options: {
+                                modules: {localIdentName: '[local]___[hash:base64:5]'},
+                               
+                            }
+                          },
                           'less-loader'
                             ]
                 },
